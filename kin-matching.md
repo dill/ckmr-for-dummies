@@ -1,6 +1,7 @@
 ---
 title: Kin pair matching for CKMR
 author: David L Miller
+mathjax-url: https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js
 
 ---
 
@@ -14,7 +15,7 @@ author: David L Miller
 Some definitions because I don't know about genetics
 
 - **locus**/**loci**: contiguous set of `G`s, `A`s, `T`s, `C`s, in a given location along the chromosome. *Think*: regular expression; need to match a pre/post-amble thing and the bit in the middle has some variation (at just one position?). The trivially largest loci is the whole genome. The smallest one is a bit more tricky.
-- **allele**: a varying (at the population level) locus
+- **allele**: a varying (at the population level) locus. There may be multiple alleles in the population but each individual will carry at most 2 of them.
 - **Medelian exclusion**: are a given parent-offspring pair compatible at all to be matched, some are not (e.g., `AA`-`AB`, yes because you can get the `A` from either parent but `BB`-`AA`, no since you only have `B`s, so where could you get the A from?).
 - **linkage**: issue that there is some correlation along the genome between alleles, so if they are physically close, you are more likely to inherit them.
 
@@ -78,13 +79,40 @@ $$
 \text{LOD}_\text{HSP, UP} = \log \frac{\mathbb{P}\left[\tilde{g}_1, \tilde{g}_2 \vert \text{HSP} \right]}{\mathbb{P}\left[\tilde{g}_1, \tilde{g}_2 \vert \text{UP}\right]}
 $$
 
-for genotypes $g_1$, $g_2$, recorded as $\tilde{g}_1$, $\tilde{g}_2$. We can write the above about any kin relationship combination, here we separate HSP from UP though. The pseudo comes from suming over the loci, giving us a score for an pairing.
+for genotypes $g_1$, $g_2$, recorded as $\tilde{g}_1$, $\tilde{g}_2$ (strictly speaking there should be a subscript $l$ on these for the given loci, but that's dropped for notation simplicity). We can write the above about any kin relationship combination, here we separate HSP from UP though. The pseudo comes from suming over the loci, giving us a score for an pairing.
 
 Can calculate $\mathbb{P}\left[\tilde{g}_1, \tilde{g}_2 \vert \text{HSP} \right]$ as:
 
 $$
-\mathbb{P}\left[\tilde{g}_1, \tilde{g}_2 \vert \text{HSP} \right]
-\sum_{g_1, g_2} \mathbb{P}\left[\tilde{g}_1 \vert g_1 \right] \mathbb{P}\left[\tilde{g}_2 \vert g_2 \right] + \mathbb{P}\left[\tilde{g}_1, \tilde{g}_2 \vert k_{12} \right]
+\mathbb{P}\left[\tilde{g}_1, \tilde{g}_2 \big\vert \text{HSP} \right] = \sum_{g_1, g_2} \left\{ \mathbb{P}\left[\tilde{g}_1 \big\vert g_1 \right] \mathbb{P}\left[\tilde{g}_2 \big\vert g_2 \right] \mathbb{P}\left[\tilde{g}_1, \tilde{g}_2 \big\vert \text{HSP} \right]\right\}
 $$
 
-where $k_{12}$ is the kinship relationship (thinking more generally here).
+where "HSP" could be whatever kinship relationship we are interested in (thinking more generally here), we can call this $k_{12}$, say. In that case we can calculate:
+
+
+$$
+\mathbb{P}\left[\tilde{g}_1, \tilde{g}_2 \big\vert \text{HSP} \right] = \kappa_0  \mathbb{P}\left[g_1 \right] \mathbb{P}\left[g_2 \right] + \kappa_1 \mathbb{P}\left[g_1, g_2 \big\vert \text{1 allele shared} \right] + \kappa_2 \mathbb{P}\left[g_1 \right] \mathbb{I}\left[g_1 = g_2 \right]
+$$
+Thinking simply about the above equation, we're looking at the probabilities that 0, 1 and 2 alleles are shared. Also worth thinking here that *all* inheritence is from parent-offspring pairs (somewhere down the line; this seems obvious but wasn't immediately to me, esp. given equation 5.1 of Bravington, Skaug and Anderson, 2016). These are identical by descent (*idb*) In the above:
+$$
+\kappa_m = \mathbb{P} \left[ m \text{ shared alleles} \big\vert k_{ij} \right]
+$$
+where appropriate values can be found in Table 1 of Bravington, Skaug and Anderson, 2016; and:
+$$
+\mathbb{P}\left[g_i \right]  = \pi(g_{i,a}) \pi(g_{i,b}) \left(1 + \mathbb{I}\left[g_{i,a} \neq g_{i,b} \right] \right)
+$$
+where $\pi(g_{i,a})$ is the population frequency of $g_{i,a}$ (the above expression assumes "Hardy-Weinberg equilibrium without linkage disequilibrium".
+
+With all of that calculated the PLOD is then:
+$$
+\text{PLOD}_\text{HSP, UP} = \sum_l \log \frac{\mathbb{P}\left[\tilde{g}_{l,1}, \tilde{g}_{l,2} \vert \text{HSP} \right]}{\mathbb{P}\left[\tilde{g}_{l,1}, \tilde{g}_{l,2} \vert \text{UP}\right]}
+$$
+where the summation is over loci, indexed by $l$.
+
+
+
+# References
+
+Bravington, M.V., Skaug, H.J. and Anderson, E.C. (2016) Close-Kin Mark-Recapture. Statistical Science.
+
+
