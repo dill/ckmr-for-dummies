@@ -139,7 +139,7 @@ We can also calculate a weighted version of this statistic (which we might need)
 $$
 \text{weighted hetzminoo}_\text{fish} = \sum_l w_l \mathbb{I}[a_l],
 $$
-where we can have "optimized" for $w_l$ for either: ($i$) finding contamination or ($ii$) finding degraded DNA.
+where we can have "optimized" for $w_l$ for either: ($i$) finding contamination or ($ii$) finding degraded DNA. In those cases the more "interesting" loci are up-weighted.
 
 If both degradation *and* contamination has happened, maybe everything is terrible and you shouldn't do close-kin?
 
