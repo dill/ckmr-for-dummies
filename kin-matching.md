@@ -65,13 +65,6 @@ We remove the pairings *in order*.
 
 To find duplicates we calculate the number of loci that are the same in a fishpair -- actually number of exclusions. The number of exclusions for a fish with itself is 0, but there is some error in this. In any case the duplicates pile themselves up near zero, the rest are in a big lump further down the horizontal axis (this includes all the other relationships).
 
-### Full sibling pairs
-
-Not many of these... Easier to do this post-HSP finding as they will distribute themselves "after" the HSPs:
-
-![FSPs after HSPs, MVB diagram.](images/hsp_fsp.jpg)
-
-So we use the PLOD statistic, as defined below for HSPs...
 
 ### Parent-offspring pairs
 
@@ -112,6 +105,23 @@ where the summation is over loci, indexed by $l$.
 In practice, there can be "interference" from half cousins (HCPs) and "half-thiatic pairs" (HTPs; that is when the mother of one is grandmother of another).
 
 We want to minimize false positives in this process, so we position out threshold pretty conservatively (to ensure we only have the HSPs that are definitely right). We know that (post-removing the FSPs) we will have all the HSPs right to the right of the mean of the distribution, we can then use a Normality/symmetry argument to get back to the HSPs we discarded because of our conservative cutoff.
+
+### Full sibling pairs
+
+Not many of these... Easier to do this post-HSP finding as they will distribute themselves "after" the HSPs:
+
+![FSPs after HSPs, MVB diagram.](images/hsp_fsp.jpg)
+
+So we use the PLOD statistic, siumilar to that of HSPs...
+$$
+\text{PLOD}_\text{FSP, HSP} = \sum_l \log \frac{\mathbb{P}\left[\tilde{g}_{l,1}, \tilde{g}_{l,2} \vert \text{FSP} \right]}{\mathbb{P}\left[\tilde{g}_{l,1}, \tilde{g}_{l,2} \vert \text{HSP}\right]}
+$$
+we already calculated $\mathbb{P}\left[\tilde{g}_{l,1}, \tilde{g}_{l,2} \vert \text{HSP}\right]$, above. So, how do we calculate the numerator? From above, we can fill-in the values of $\kappa_k$ appropriately for FSPs: $\kappa_0 = 1/4, \kappa_1 = 1/2, \kappa_2 = 1/4$ and then calculate $\mathbb{P}\left[\tilde{g}_{l,1}, \tilde{g}_{l,2} \vert \text{FSP} \right]$.
+
+We can also calculate the expected value of the PLOD using:
+$$
+\mathbb{E} \left[\text{PLOD}_\text{FSP, HSP} \vert \text{FSP} \right] = \sum_{g_1, g_2} \sum_l \log_e \left( \frac{\mathbb{P}\left[\tilde{g}_{l,1}, \tilde{g}_{l,2} \vert \text{FSP} \right]}{\mathbb{P}\left[\tilde{g}_{l,1}, \tilde{g}_{l,2} \vert \text{HSP}\right]}\right) \mathbb{P}\left[\tilde{g}_{l,1}, \tilde{g}_{l,2} \vert \text{FSP} \right]
+$$
 
 ## Model/data checking
 
